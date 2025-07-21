@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Dashboard - Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/topbar.css') }}">
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+            <style>
+            .ros-data-card {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            #ros-image {
+                max-width: 100%;
+                height: auto;
+                border: 1px solid #ddd;
+                margin-bottom: 15px;
+                display: block;
+            }
+            #ros-result-text {
+                background-color: #f8f9fa; /* 부트스트랩 배경색 */
+                padding: 15px;
+                border-radius: 5px;
+                white-space: pre-wrap; /* 줄바꿈 유지 */
+                word-wrap: break-word; /* 긴 텍스트 줄바꿈 */
+                font-family: 'monospace'; /* 가독성을 위해 고정폭 글꼴 사용 */
+                color: #343a40; /* 텍스트 색상 */
+            }
+        </style>
+    
+    </head>
+    <body class="sb-nav-fixed">
+        {% include 'base/topbar.html' %}
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_content">
+                <main>
+                         <div class="container-fluid dashboard-container">
+                        <h1 class="mt-4">Dashboard</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+
+                        <div class="card mb-4 ros-data-card">
+                            <div class="card-header">
+                                <i class="fas fa-video me-1"></i>
+                                실시간 창고 카메라 (Live Warehouse Camera)
+                            </div>
+                            <div class="card-body text-center">
+                                <img id="ros-image" src="" class="img-fluid rounded" alt="ROS 2 스트림">
+                            </div>
+                        </div>
+
+                        <div class="card mb-4 ros-data-card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                YOLO 분석 결과 (YOLO Analysis Result)
+                            </div>
+                            <div class="card-body">
+                                <pre id="ros-result-text">YOLO 결과를 로딩 중...</pre>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-table me-1"></i>
+                                    Product Inventory (YOLO 실시간 상태)
+                                </div>
+                                <div class="card-body">
+                                    <table id="yolo-inventory-table" class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>slot_id</th>
+                                                <th>object_name</th>
+                                                <th>quantity</th>
+                                                <th>status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <script>
+                                function fetchYoloStatus() {
+                                    fetch('/get_yolo_status')
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            const tableBody = document.querySelector('#yolo-inventory-table tbody');
+                                            tableBody.innerHTML = '';
+
+                                            data.forEach(row => {
+                                                const tr = document.createElement('tr');
+                                                tr.innerHTML = `
+                                                    <td>${row.slot_id}</td>
+                                                    <td>${row.object_name}</td>
+                                                    <td>${row.quantity}</td>
+                                                    <td>${row.status}</td>
+                                                `;
+                                                tableBody.appendChild(tr);
+                                            });
+                                        })
+                                        .catch(error => console.error('YOLO 상태 로드 실패:', error));
+                                }
+
+                                document.addEventListener('DOMContentLoaded', fetchYoloStatus);
+                                setInterval(fetchYoloStatus, 5000);
+                            </script>
+
+                    <div class="container-fluid dashboard-container">
+                        <h1 class="mt-4">Dashboard</h1>
+
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i></i>
+                                YOLO WEB CAM
+                            </div>
+                            <div class"card-body">
+                                
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Product Inventory
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>slot_id</th>
+                                            <th>object_name</th>
+                                            <th>quantity</th>
+                                            <th>status</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Order History
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Address</th>
+                                            <th>Product</th>
+                                            <th>EA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Tiger Nixon</td>
+                                            <td>aaa@gmail.com</td>
+                                            <td>010-1111-1111</td>
+                                            <td>seoul</td>
+                                            <td>product1</td>
+                                            <td>2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Garrett Winters</td>
+                                            <td>bbb@gmail.com</td>
+                                            <td>010-2222-2222</td>
+                                            <td>seoul</td>
+                                            <td>product2</td>
+                                            <td>3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ashton Cox</td>
+                                            <td>ccc@gmail.com</td>
+                                            <td>010-3333-3333</td>
+                                            <td>Seoul</td>
+                                            <td>product3</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td> </td>
+                                            <td> </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+        <script>
+            function fetchRosData() {
+                fetch('/get_ros_data') // Flask 앱의 /get_ros_data 엔드포인트에서 데이터를 가져옴
+                    .then(response => {
+                        if (!response.ok) {
+                            // HTTP 오류 상태 (예: 404, 500) 처리
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json(); // 응답을 JSON으로 파싱
+                    })
+                    .then(data => {
+                        const rosImage = document.getElementById('ros-image');
+                        const rosResultText = document.getElementById('ros-result-text');
+
+                        // 이미지 업데이트 (Base64 데이터)
+                        if (data.image) {
+                            rosImage.src = 'data:image/jpeg;base64,' + data.image;
+                            rosImage.alt = 'ROS 2 스트림'; // 이미지가 로드될 때만 alt 텍스트를 업데이트
+                        } else {
+                            rosImage.src = ''; // 이미지가 없으면 src를 비워서 빈 이미지 표시
+                            rosImage.alt = '이미지 없음';
+                        }
+
+                        // 결과 텍스트 업데이트
+                        if (data.result) {
+                            rosResultText.textContent = data.result;
+                        } else {
+                            rosResultText.textContent = '결과 없음.';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('ROS 데이터 가져오기 오류:', error);
+                        document.getElementById('ros-result-text').textContent = '데이터 로딩 중 오류 발생! (콘솔 확인)';
+                        // 오류 발생 시 이미지를 비워줌
+                        document.getElementById('ros-image').src = '';
+                        document.getElementById('ros-image').alt = '오류로 인해 이미지를 로드할 수 없습니다.';
+                    });
+            }
+
+            // 500ms(0.5초)마다 데이터 업데이트 함수 호출
+            setInterval(fetchRosData, 500);
+
+            // 페이지 로드 시 한 번 바로 호출하여 초기 데이터 표시
+            document.addEventListener('DOMContentLoaded', fetchRosData);
+        </script>   
+   
+    </body>
+</html>
